@@ -1,18 +1,5 @@
 import type { TabId } from '../types'
-
-interface NavItem {
-  id: TabId
-  label: string
-  icon: string
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: '◈' },
-  { id: 'daily', label: 'Daily Routine', icon: '☀' },
-  { id: 'applications', label: 'Applications', icon: '▤' },
-  { id: 'guidelines', label: 'Guidelines', icon: '◎' },
-  { id: 'career', label: 'Career Plan', icon: '↗' },
-]
+import { NAV_ITEMS } from '../navigation'
 
 interface SidebarProps {
   active: TabId
@@ -22,7 +9,7 @@ interface SidebarProps {
 
 export function Sidebar({ active, onNavigate, streak }: SidebarProps) {
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-surface-raised border-r border-white/5 flex flex-col z-50">
+    <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-surface-raised border-r border-white/5 flex-col z-50">
       <div className="p-6 border-b border-white/5">
         <h1 className="font-serif text-2xl text-white leading-tight">
           Career<br />

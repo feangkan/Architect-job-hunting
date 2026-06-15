@@ -42,7 +42,7 @@ export function CareerPlan({ goals, skills, onToggleGoal, onUpdateSkill }: Caree
   return (
     <div className="space-y-10">
       <header>
-        <h2 className="font-serif text-4xl text-white">Career Plan</h2>
+        <h2 className="font-serif text-3xl sm:text-4xl text-white">Career Plan</h2>
         <p className="text-muted mt-2">
           Your roadmap from RMIT master's to computational design leadership
         </p>

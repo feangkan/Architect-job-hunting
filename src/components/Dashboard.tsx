@@ -32,7 +32,7 @@ export function Dashboard({ state, onNavigate }: DashboardProps) {
   return (
     <div className="space-y-8">
       <header>
-        <h2 className="font-serif text-4xl text-white">
+        <h2 className="font-serif text-3xl sm:text-4xl text-white">
           {greeting()}, Architect
         </h2>
         <p className="text-muted mt-2">

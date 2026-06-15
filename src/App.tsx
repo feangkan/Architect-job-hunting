@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { TabId, AppState, JobApplication } from './types'
 import { loadState, saveState } from './storage'
 import { Sidebar } from './components/Sidebar'
+import { MobileNav } from './components/MobileNav'
 import { Dashboard } from './components/Dashboard'
 import { DailyRoutine } from './components/DailyRoutine'
 import { Applications } from './components/Applications'
@@ -78,7 +79,12 @@ export default function App() {
         onNavigate={setActiveTab}
         streak={state.streak}
       />
-      <main className="ml-64 p-8 max-w-5xl">
+      <MobileNav
+        active={activeTab}
+        onNavigate={setActiveTab}
+        streak={state.streak}
+      />
+      <main className="lg:ml-64 p-4 sm:p-6 lg:p-8 max-w-5xl pb-24 lg:pb-8">
         {activeTab === 'dashboard' && (
           <Dashboard state={state} onNavigate={setActiveTab} />
         )}

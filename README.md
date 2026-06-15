@@ -12,6 +12,23 @@ A daily job-hunting companion built for **RMIT Master of Architecture** students
 
 All data is saved locally in your browser (no account or server required).
 
+## Mobile
+
+The app works on phone browsers with a bottom tab bar and sticky header.
+
+### Option A — Same WiFi (quick test)
+
+1. On your computer, run `npm run dev`
+2. Note the **Network** URL Vite prints (e.g. `http://192.168.1.5:5173`)
+3. Open that URL on your phone (same WiFi network)
+
+### Option B — Deploy online (best for daily use)
+
+Deploy the `dist` folder to [Vercel](https://vercel.com) or [Netlify](https://netlify.com) for a permanent URL.
+
+On iPhone: open the URL in Safari → Share → **Add to Home Screen**  
+On Android: Chrome menu → **Install app** or **Add to Home screen**
+
 ## Quick Start
 
 ```bash

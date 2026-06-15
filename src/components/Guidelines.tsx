@@ -9,7 +9,7 @@ export function Guidelines() {
   return (
     <div className="space-y-8">
       <header>
-        <h2 className="font-serif text-4xl text-white">Guidelines</h2>
+        <h2 className="font-serif text-3xl sm:text-4xl text-white">Guidelines</h2>
         <p className="text-muted mt-2">
           Tailored advice for AI, digital fabrication & architecture careers in Australia
         </p>

@@ -47,9 +47,9 @@ export function Applications({ applications, onAdd, onUpdate, onDelete }: Applic
 
   return (
     <div className="space-y-8">
-      <header className="flex items-start justify-between">
+      <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <h2 className="font-serif text-4xl text-white">Applications</h2>
+          <h2 className="font-serif text-3xl sm:text-4xl text-white">Applications</h2>
           <p className="text-muted mt-2">Track every role from saved to offer</p>
         </div>
         <button

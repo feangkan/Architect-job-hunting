@@ -28,7 +28,7 @@ export function DailyRoutine({ tasks, onToggle }: DailyRoutineProps) {
   return (
     <div className="space-y-8">
       <header>
-        <h2 className="font-serif text-4xl text-white">Daily Routine</h2>
+        <h2 className="font-serif text-3xl sm:text-4xl text-white">Daily Routine</h2>
         <p className="text-muted mt-2">
           Your structured job-hunting workflow — complete these every weekday
         </p>
