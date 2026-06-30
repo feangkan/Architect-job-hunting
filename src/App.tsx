@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { TabId, AppState, JobApplication } from './types'
+import type { TabId, AppState, JobApplication, ExpertiseItem, PRProfile, Company } from './types'
 import { loadState, saveState } from './storage'
 import { Sidebar } from './components/Sidebar'
 import { MobileNav } from './components/MobileNav'
@@ -8,6 +8,9 @@ import { DailyRoutine } from './components/DailyRoutine'
 import { Applications } from './components/Applications'
 import { Guidelines } from './components/Guidelines'
 import { CareerPlan } from './components/CareerPlan'
+import { CompanyMatcher } from './components/CompanyMatcher'
+import { PRRoute } from './components/PRRoute'
+import { Reviewer } from './components/Reviewer'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard')
@@ -72,6 +75,53 @@ export default function App() {
     }))
   }
 
+  const updateExpertise = (tag: string, weight: ExpertiseItem['weight']) => {
+    update((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        expertise: prev.profile.expertise.map((e) =>
+          e.tag === tag ? { ...e, weight } : e
+        ),
+      },
+    }))
+  }
+
+  const toggleRegionalIntent = (value: boolean) => {
+    update((prev) => ({
+      ...prev,
+      profile: { ...prev.profile, regionalIntent: value },
+    }))
+  }
+
+  const updatePR = (updates: Partial<PRProfile>) => {
+    update((prev) => ({
+      ...prev,
+      profile: { ...prev.profile, pr: { ...prev.profile.pr, ...updates } },
+    }))
+  }
+
+  const trackCompany = (company: Company) => {
+    update((prev) => {
+      if (prev.applications.some((a) => a.url === company.url && a.company === company.name)) {
+        return prev
+      }
+      const newApp: JobApplication = {
+        id: crypto.randomUUID(),
+        company: company.name,
+        role: 'Graduate / Computational Designer',
+        location: `${company.city}, ${company.state}`,
+        url: company.url,
+        status: 'saved',
+        dateApplied: '',
+        notes: company.isRegional ? 'Regional employer — strong PR leverage (491).' : '',
+        tags: [company.category, company.isRegional ? 'regional' : 'metro'],
+      }
+      return { ...prev, applications: [newApp, ...prev.applications] }
+    })
+    setActiveTab('applications')
+  }
+
   return (
     <div className="min-h-screen">
       <Sidebar
@@ -88,6 +138,18 @@ export default function App() {
         {activeTab === 'dashboard' && (
           <Dashboard state={state} onNavigate={setActiveTab} />
         )}
+        {activeTab === 'matcher' && (
+          <CompanyMatcher
+            profile={state.profile}
+            onChangeExpertise={updateExpertise}
+            onToggleRegional={toggleRegionalIntent}
+            onTrack={trackCompany}
+          />
+        )}
+        {activeTab === 'pr' && (
+          <PRRoute profile={state.profile} onChangePR={updatePR} />
+        )}
+        {activeTab === 'review' && <Reviewer />}
         {activeTab === 'daily' && (
           <DailyRoutine tasks={state.dailyTasks} onToggle={toggleTask} />
         )}

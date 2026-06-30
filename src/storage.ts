@@ -1,6 +1,40 @@
-import type { AppState, DailyTask, CareerGoal, SkillItem } from './types'
+import type { AppState, DailyTask, CareerGoal, SkillItem, UserProfile } from './types'
 
 const STORAGE_KEY = 'career-compass-state'
+
+// Seeded from the user's stated expertise (computational design, robotic
+// fabrication, AR/XR, BIM, parametric, generative AI/ML, digital fabrication,
+// sustainability, project management, visualization) and PTE 59 / IELTS 6.0
+// English (Competent band → 0 migration points). Everything here is editable
+// in-app and re-runs the analysis live.
+const DEFAULT_PROFILE: UserProfile = {
+  regionalIntent: true,
+  expertise: [
+    { tag: 'computational', label: 'Computational Design', icon: '◫', weight: 5 },
+    { tag: 'robotic-fab', label: 'Robotic Fabrication', icon: '⛭', weight: 4 },
+    { tag: 'ar-xr', label: 'AR / XR', icon: '◉', weight: 4 },
+    { tag: 'bim', label: 'BIM / Revit', icon: '▦', weight: 4 },
+    { tag: 'parametric', label: 'Parametric (Grasshopper)', icon: '∿', weight: 4 },
+    { tag: 'gen-ai-ml', label: 'Generative AI / ML', icon: '✦', weight: 4 },
+    { tag: 'digital-fab', label: 'Digital Fabrication (3D/CNC)', icon: '⬡', weight: 4 },
+    { tag: 'sustainability', label: 'Sustainability / ESD', icon: '♺', weight: 3 },
+    { tag: 'project-mgmt', label: 'Project Management', icon: '▣', weight: 3 },
+    { tag: 'visualization', label: 'Visualization', icon: '◈', weight: 3 },
+  ],
+  pr: {
+    age: '25-32',
+    english: 'competent',
+    hasDegree: true,
+    australianStudy: true,
+    regionalStudy: false,
+    professionalYear: false,
+    naatiLanguage: false,
+    ausWorkYears: 0,
+    overseasWorkYears: 0,
+    partnerStatus: 'single',
+    nomination: 'none',
+  },
+}
 
 const DEFAULT_DAILY_TASKS: DailyTask[] = [
   { id: '1', label: 'Search 5 new roles on LinkedIn / Seek / ArchDaily Jobs', completed: false, category: 'search' },
@@ -70,6 +104,7 @@ const DEFAULT_STATE: AppState = {
   dailyLogs: [],
   streak: 0,
   lastActiveDate: '',
+  profile: DEFAULT_PROFILE,
 }
 
 function today(): string {
@@ -106,6 +141,14 @@ export function loadState(): AppState {
       dailyTasks: parsed.dailyTasks?.length ? parsed.dailyTasks : DEFAULT_DAILY_TASKS,
       careerGoals: parsed.careerGoals?.length ? parsed.careerGoals : DEFAULT_CAREER_GOALS,
       skills: parsed.skills?.length ? parsed.skills : DEFAULT_SKILLS,
+      profile: {
+        ...DEFAULT_PROFILE,
+        ...parsed.profile,
+        expertise: parsed.profile?.expertise?.length
+          ? parsed.profile.expertise
+          : DEFAULT_PROFILE.expertise,
+        pr: { ...DEFAULT_PROFILE.pr, ...parsed.profile?.pr },
+      },
     })
   } catch {
     return updateStreak({ ...DEFAULT_STATE })

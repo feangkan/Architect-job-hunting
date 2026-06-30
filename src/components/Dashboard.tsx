@@ -1,14 +1,20 @@
-import type { AppState } from '../types'
+import type { AppState, TabId } from '../types'
+import { COMPANIES } from '../data/companies'
+import { rankCompanies } from '../lib/matching'
+import { calcPoints } from '../lib/prPoints'
 
 interface DashboardProps {
   state: AppState
-  onNavigate: (tab: 'daily' | 'applications' | 'career') => void
+  onNavigate: (tab: TabId) => void
 }
 
 export function Dashboard({ state, onNavigate }: DashboardProps) {
   const completedToday = state.dailyTasks.filter((t) => t.completed).length
   const totalTasks = state.dailyTasks.length
   const progress = totalTasks ? Math.round((completedToday / totalTasks) * 100) : 0
+
+  const topMatches = rankCompanies(state.profile, COMPANIES, 'pr').slice(0, 3)
+  const points = calcPoints(state.profile.pr)
 
   const statusCounts = state.applications.reduce(
     (acc, app) => {
@@ -70,6 +76,48 @@ export function Dashboard({ state, onNavigate }: DashboardProps) {
           sub="milestones reached"
           onClick={() => onNavigate('career')}
         />
+      </div>
+
+      <div className="bg-gradient-to-r from-accent/15 to-transparent rounded-2xl p-6 border border-accent/20">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h3 className="font-semibold text-white">⚑ PR Mission</h3>
+            <p className="text-muted text-sm mt-1">
+              Goal: permanent residency by the shortest realistic route. Your best-case 491 score is{' '}
+              <span className="text-white font-semibold">{points.visa491} pts</span>{' '}
+              {points.visa491 >= 65 ? '(above the 65 floor).' : '(below the 65 floor — push the levers).'}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => onNavigate('matcher')}
+              className="px-4 py-2 rounded-xl text-sm font-medium bg-accent text-white hover:opacity-90"
+            >
+              Find companies
+            </button>
+            <button
+              onClick={() => onNavigate('pr')}
+              className="px-4 py-2 rounded-xl text-sm font-medium bg-surface-overlay text-white hover:bg-surface-overlay/70"
+            >
+              PR route
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
+          {topMatches.map((m) => (
+            <button
+              key={m.company.id}
+              onClick={() => onNavigate('matcher')}
+              className="bg-surface-raised/70 rounded-xl p-3 text-left border border-white/5 hover:border-white/10"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted">{m.company.state}</span>
+                <span className="text-sm font-bold text-accent">{m.overall}</span>
+              </div>
+              <p className="text-sm text-white mt-1 leading-tight line-clamp-2">{m.company.name}</p>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
