@@ -2,7 +2,7 @@
   "name": "Career Compass",
   "short_name": "Compass",
   "description": "Daily job hunting for AI & digital fabrication architects",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0f0f1a",
   "theme_color": "#1a1a2e",
