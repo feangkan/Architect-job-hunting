@@ -1,57 +1,44 @@
-# Career Compass
+# Career Compass — Architect → Australian PR
 
-A daily job-hunting companion built for **RMIT Master of Architecture** students specializing in **AI** and **digital fabrication**.
+A private, offline-first web app that helps an architecture graduate target the
+**shortest realistic route to Australian permanent residency (PR)** based on
+their expertise (computational design, robotic fabrication, AR/XR, BIM,
+parametric, generative AI/ML, digital fabrication, sustainability, etc.).
+
+Everything runs client-side (React + Vite + Tailwind) and persists to
+`localStorage` — no backend, no accounts, nothing uploaded.
 
 ## Features
 
-- **Dashboard** — daily progress, application pipeline, streak tracking
-- **Daily Routine** — structured checklist for consistent job hunting
-- **Applications Tracker** — log and manage roles from saved to offer
-- **Guidelines** — tailored career advice for the Australian architecture + tech market
-- **Career Plan** — roadmap, goals, and skills tracker
+- **Company Matcher** — a curated, Australia-wide employer shortlist (incl.
+  regional firms and Tasmania) scored live against your expertise. Each card
+  shows skill fit, win chance, PR leverage, why it suits, and future
+  opportunity. Adjust your skills and the whole list re-ranks instantly (the
+  "skill loop").
+- **PR Route Analyzer** — a transparent estimator of the GSM points test
+  (subclasses 189 / 190 / 491) for Architect (ANZSCO 232111), the recommended
+  visa pathway sequence, and the **highest-impact levers** to raise your score
+  (e.g. moving English from Competent → Superior is +20).
+- **Application Review** — paste your CV / cover letter (and optionally a job
+  description) for an instant heuristic score with tailored fixes.
+- Plus the original Dashboard, Applications tracker, Daily routine, Guidelines,
+  and Career plan.
 
-All data is saved locally in your browser (no account or server required).
+## Important disclaimer
 
-## Mobile
+The company data is a hand-curated research shortlist with **estimated**
+tech-maturity / visa-sponsorship signals — not live jobs or official
+information. The PR analyzer is an **educational estimate**, not migration
+advice. Immigration rules, occupation lists, and invitation cut-offs change
+regularly, and **no tool can guarantee a visa outcome**. Always verify roles on
+each firm's careers page and confirm migration details with the Department of
+Home Affairs and a registered (MARA) migration agent.
 
-The app works on phone browsers with a bottom tab bar and sticky header.
-
-### Option A — Same WiFi (quick test)
-
-1. On your computer, run `npm run dev`
-2. Note the **Network** URL Vite prints (e.g. `http://192.168.1.5:5173`)
-3. Open that URL on your phone (same WiFi network)
-
-### Option B — Deploy online (best for daily use)
-
-Deploy the `dist` folder to [Vercel](https://vercel.com) or [Netlify](https://netlify.com) for a permanent URL.
-
-On iPhone: open the URL in Safari → Share → **Add to Home Screen**  
-On Android: Chrome menu → **Install app** or **Add to Home screen**
-
-## Quick Start
+## Develop
 
 ```bash
 npm install
-npm run dev
+npm run dev      # local dev server
+npm run build    # type-check + production build
+npm run preview  # preview the production build
 ```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## Build for Production
-
-```bash
-npm run build
-npm run preview
-```
-
-## Tech Stack
-
-- React 19 + TypeScript
-- Vite 6
-- Tailwind CSS 4
-
-## Customization
-
-Edit `src/data/content.ts` to update guidelines and career roadmap content.
-Edit `src/storage.ts` to change default daily tasks, goals, and skills.
