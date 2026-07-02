@@ -5,9 +5,10 @@ interface SidebarProps {
   active: TabId
   onNavigate: (tab: TabId) => void
   streak: number
+  profileSwitcher?: React.ReactNode
 }
 
-export function Sidebar({ active, onNavigate, streak }: SidebarProps) {
+export function Sidebar({ active, onNavigate, streak, profileSwitcher }: SidebarProps) {
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-surface-raised border-r border-white/5 flex-col z-50">
       <div className="p-6 border-b border-white/5">
@@ -19,6 +20,8 @@ export function Sidebar({ active, onNavigate, streak }: SidebarProps) {
           AI · Digital Fabrication · Architecture
         </p>
       </div>
+
+      {profileSwitcher && <div className="px-4 pt-4">{profileSwitcher}</div>}
 
       <nav className="flex-1 p-4 space-y-1">
         {NAV_ITEMS.map((item) => (

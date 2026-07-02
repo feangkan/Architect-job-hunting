@@ -5,19 +5,20 @@ interface MobileNavProps {
   active: TabId
   onNavigate: (tab: TabId) => void
   streak: number
+  profileSwitcher?: React.ReactNode
 }
 
-export function MobileNav({ active, onNavigate, streak }: MobileNavProps) {
+export function MobileNav({ active, onNavigate, streak, profileSwitcher }: MobileNavProps) {
   return (
     <>
-      <header className="lg:hidden sticky top-0 z-40 bg-surface/95 backdrop-blur-md border-b border-white/5 px-4 py-3 flex items-center justify-between safe-top">
-        <div>
+      <header className="lg:hidden sticky top-0 z-40 bg-surface/95 backdrop-blur-md border-b border-white/5 px-4 py-3 flex items-center gap-3 safe-top">
+        <div className="shrink-0">
           <h1 className="font-serif text-xl text-white leading-tight">
             Career <span className="text-accent">Compass</span>
           </h1>
-          <p className="text-[10px] text-muted">AI · Fabrication · Architecture</p>
         </div>
-        <div className="bg-surface-overlay rounded-xl px-3 py-2 text-center min-w-[52px]">
+        {profileSwitcher && <div className="flex-1 min-w-0 max-w-[220px]">{profileSwitcher}</div>}
+        <div className="bg-surface-overlay rounded-xl px-3 py-2 text-center min-w-[48px] shrink-0">
           <div className="text-lg font-bold text-accent leading-none">{streak}</div>
           <div className="text-[9px] text-muted mt-0.5">streak</div>
         </div>

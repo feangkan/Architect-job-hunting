@@ -148,6 +148,20 @@ export interface AppState {
   profile: UserProfile
 }
 
+// One person's account. Everything they track lives in `state`, fully isolated
+// from other people using the same browser/device.
+export interface ProfileRecord {
+  id: string
+  name: string
+  createdAt: string
+  state: AppState
+}
+
+export interface ProfilesStore {
+  activeId: string | null
+  profiles: ProfileRecord[]
+}
+
 export type TabId =
   | 'dashboard'
   | 'matcher'

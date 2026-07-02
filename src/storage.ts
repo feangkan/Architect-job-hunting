@@ -1,26 +1,42 @@
-import type { AppState, DailyTask, CareerGoal, SkillItem, UserProfile } from './types'
+import type {
+  AppState,
+  DailyTask,
+  CareerGoal,
+  SkillItem,
+  UserProfile,
+  ExpertiseItem,
+  EnglishLevel,
+  AgeBracket,
+  ProfilesStore,
+  ProfileRecord,
+} from './types'
 
-const STORAGE_KEY = 'career-compass-state'
+const STORAGE_KEY = 'career-compass-state' // legacy single-profile key
+const PROFILES_KEY = 'career-compass-profiles' // new multi-profile key
 
-// Seeded from the user's stated expertise (computational design, robotic
-// fabrication, AR/XR, BIM, parametric, generative AI/ML, digital fabrication,
-// sustainability, project management, visualization) and PTE 59 / IELTS 6.0
-// English (Competent band → 0 migration points). Everything here is editable
-// in-app and re-runs the analysis live.
-const DEFAULT_PROFILE: UserProfile = {
+// Canonical expertise dimensions (label + icon). New profiles start every skill
+// at a neutral 3 and the person tunes them during onboarding / in the app.
+export const EXPERTISE_META: Omit<ExpertiseItem, 'weight'>[] = [
+  { tag: 'computational', label: 'Computational Design', icon: '◫' },
+  { tag: 'robotic-fab', label: 'Robotic Fabrication', icon: '⛭' },
+  { tag: 'ar-xr', label: 'AR / XR', icon: '◉' },
+  { tag: 'bim', label: 'BIM / Revit', icon: '▦' },
+  { tag: 'parametric', label: 'Parametric (Grasshopper)', icon: '∿' },
+  { tag: 'gen-ai-ml', label: 'Generative AI / ML', icon: '✦' },
+  { tag: 'digital-fab', label: 'Digital Fabrication (3D/CNC)', icon: '⬡' },
+  { tag: 'sustainability', label: 'Sustainability / ESD', icon: '♺' },
+  { tag: 'project-mgmt', label: 'Project Management', icon: '▣' },
+  { tag: 'visualization', label: 'Visualization', icon: '◈' },
+]
+
+export function defaultExpertise(weight: ExpertiseItem['weight'] = 3): ExpertiseItem[] {
+  return EXPERTISE_META.map((m) => ({ ...m, weight }))
+}
+
+// Neutral profile template for a brand-new person (not tuned to anyone).
+const NEUTRAL_PROFILE: UserProfile = {
   regionalIntent: true,
-  expertise: [
-    { tag: 'computational', label: 'Computational Design', icon: '◫', weight: 5 },
-    { tag: 'robotic-fab', label: 'Robotic Fabrication', icon: '⛭', weight: 4 },
-    { tag: 'ar-xr', label: 'AR / XR', icon: '◉', weight: 4 },
-    { tag: 'bim', label: 'BIM / Revit', icon: '▦', weight: 4 },
-    { tag: 'parametric', label: 'Parametric (Grasshopper)', icon: '∿', weight: 4 },
-    { tag: 'gen-ai-ml', label: 'Generative AI / ML', icon: '✦', weight: 4 },
-    { tag: 'digital-fab', label: 'Digital Fabrication (3D/CNC)', icon: '⬡', weight: 4 },
-    { tag: 'sustainability', label: 'Sustainability / ESD', icon: '♺', weight: 3 },
-    { tag: 'project-mgmt', label: 'Project Management', icon: '▣', weight: 3 },
-    { tag: 'visualization', label: 'Visualization', icon: '◈', weight: 3 },
-  ],
+  expertise: defaultExpertise(3),
   pr: {
     age: '25-32',
     english: 'competent',
@@ -63,7 +79,7 @@ const DEFAULT_CAREER_GOALS: CareerGoal[] = [
   {
     id: 'g3',
     title: 'Land graduate or junior role in computational design',
-    description: 'Target firms: Hassell, Woods Bagot, FJMT, BVN, or tech-forward studios in Melbourne/Sydney',
+    description: 'Target firms: Hassell, Woods Bagot, FJMT, BVN, or tech-forward studios',
     timeframe: 'medium',
     completed: false,
   },
@@ -96,22 +112,41 @@ const DEFAULT_SKILLS: SkillItem[] = [
   { id: 's10', name: 'Technical writing & presentation', category: 'soft', level: 3, target: 5 },
 ]
 
-const DEFAULT_STATE: AppState = {
-  applications: [],
-  dailyTasks: DEFAULT_DAILY_TASKS,
-  careerGoals: DEFAULT_CAREER_GOALS,
-  skills: DEFAULT_SKILLS,
-  dailyLogs: [],
-  streak: 0,
-  lastActiveDate: '',
-  profile: DEFAULT_PROFILE,
+export interface OnboardingPrefs {
+  regionalIntent: boolean
+  english: EnglishLevel
+  age: AgeBracket
+  expertise: ExpertiseItem[]
+}
+
+function baseState(profile: UserProfile): AppState {
+  return {
+    applications: [],
+    dailyTasks: DEFAULT_DAILY_TASKS.map((t) => ({ ...t })),
+    careerGoals: DEFAULT_CAREER_GOALS.map((g) => ({ ...g })),
+    skills: DEFAULT_SKILLS.map((s) => ({ ...s })),
+    dailyLogs: [],
+    streak: 0,
+    lastActiveDate: '',
+    profile,
+  }
+}
+
+// Build a fresh, isolated AppState from a person's onboarding choices.
+export function newAppState(prefs: OnboardingPrefs): AppState {
+  const profile: UserProfile = {
+    regionalIntent: prefs.regionalIntent,
+    expertise: prefs.expertise,
+    pr: { ...NEUTRAL_PROFILE.pr, english: prefs.english, age: prefs.age },
+  }
+  return baseState(profile)
 }
 
 function today(): string {
   return new Date().toISOString().split('T')[0]
 }
 
-function updateStreak(state: AppState): AppState {
+export function updateStreak(state: AppState): AppState {
   const todayStr = today()
   if (state.lastActiveDate === todayStr) return state
 
@@ -119,8 +154,7 @@ function updateStreak(state: AppState): AppState {
   yesterday.setDate(yesterday.getDate() - 1)
   const yesterdayStr = yesterday.toISOString().split('T')[0]
 
-  const newStreak =
-    state.lastActiveDate === yesterdayStr ? state.streak + 1 : state.lastActiveDate ? 1 : 1
+  const newStreak = state.lastActiveDate === yesterdayStr ? state.streak + 1 : 1
 
   return {
     ...state,
@@ -130,40 +164,71 @@ function updateStreak(state: AppState): AppState {
   }
 }
 
-export function loadState(): AppState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return updateStreak({ ...DEFAULT_STATE })
-    const parsed = JSON.parse(raw) as AppState
-    return updateStreak({
-      ...DEFAULT_STATE,
-      ...parsed,
-      dailyTasks: parsed.dailyTasks?.length ? parsed.dailyTasks : DEFAULT_DAILY_TASKS,
-      careerGoals: parsed.careerGoals?.length ? parsed.careerGoals : DEFAULT_CAREER_GOALS,
-      skills: parsed.skills?.length ? parsed.skills : DEFAULT_SKILLS,
-      profile: {
-        ...DEFAULT_PROFILE,
-        ...parsed.profile,
-        expertise: parsed.profile?.expertise?.length
-          ? parsed.profile.expertise
-          : DEFAULT_PROFILE.expertise,
-        pr: { ...DEFAULT_PROFILE.pr, ...parsed.profile?.pr },
-      },
-    })
-  } catch {
-    return updateStreak({ ...DEFAULT_STATE })
-  }
-}
-
-export function saveState(state: AppState): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-}
-
-export function resetDailyTasks(state: AppState): AppState {
+// Ensure a loaded state has all required shape (older saves may lack fields).
+function normalizeState(parsed: Partial<AppState>): AppState {
   return {
-    ...state,
-    dailyTasks: DEFAULT_DAILY_TASKS.map((t) => ({ ...t, completed: false })),
+    ...baseState(NEUTRAL_PROFILE),
+    ...parsed,
+    dailyTasks: parsed.dailyTasks?.length ? parsed.dailyTasks : DEFAULT_DAILY_TASKS.map((t) => ({ ...t })),
+    careerGoals: parsed.careerGoals?.length ? parsed.careerGoals : DEFAULT_CAREER_GOALS.map((g) => ({ ...g })),
+    skills: parsed.skills?.length ? parsed.skills : DEFAULT_SKILLS.map((s) => ({ ...s })),
+    profile: {
+      ...NEUTRAL_PROFILE,
+      ...parsed.profile,
+      expertise: parsed.profile?.expertise?.length ? parsed.profile.expertise : defaultExpertise(3),
+      pr: { ...NEUTRAL_PROFILE.pr, ...parsed.profile?.pr },
+    },
   }
+}
+
+export function createProfile(name: string, prefs: OnboardingPrefs): ProfileRecord {
+  return {
+    id: crypto.randomUUID(),
+    name: name.trim() || 'My profile',
+    createdAt: new Date().toISOString(),
+    state: newAppState(prefs),
+  }
+}
+
+// Load the multi-profile store, migrating any legacy single-profile save.
+export function loadProfiles(): ProfilesStore {
+  try {
+    const raw = localStorage.getItem(PROFILES_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw) as ProfilesStore
+      const profiles = (parsed.profiles ?? []).map((p) => ({
+        ...p,
+        state: normalizeState(p.state),
+      }))
+      const activeId =
+        parsed.activeId && profiles.some((p) => p.id === parsed.activeId)
+          ? parsed.activeId
+          : profiles[0]?.id ?? null
+      return { activeId, profiles }
+    }
+
+    // Migrate an existing legacy single-profile save into the multi store.
+    const legacy = localStorage.getItem(STORAGE_KEY)
+    if (legacy) {
+      const state = normalizeState(JSON.parse(legacy) as Partial<AppState>)
+      const record: ProfileRecord = {
+        id: crypto.randomUUID(),
+        name: 'My profile',
+        createdAt: new Date().toISOString(),
+        state,
+      }
+      const store: ProfilesStore = { activeId: record.id, profiles: [record] }
+      saveProfiles(store)
+      return store
+    }
+  } catch {
+    /* fall through to empty store */
+  }
+  return { activeId: null, profiles: [] }
+}
+
+export function saveProfiles(store: ProfilesStore): void {
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(store))
 }
 
 export { DEFAULT_DAILY_TASKS, DEFAULT_CAREER_GOALS, DEFAULT_SKILLS }
