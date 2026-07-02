@@ -27,6 +27,7 @@ import { PRRoute } from './components/PRRoute'
 import { Reviewer } from './components/Reviewer'
 import { Onboarding } from './components/Onboarding'
 import { ProfileSwitcher } from './components/ProfileSwitcher'
+import { Feedback } from './components/Feedback'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard')
@@ -260,6 +261,9 @@ export default function App() {
             onToggleGoal={toggleGoal}
             onUpdateSkill={updateSkill}
           />
+        )}
+        {activeTab === 'feedback' && (
+          <Feedback profileName={activeProfile.name} />
         )}
       </main>
     </div>

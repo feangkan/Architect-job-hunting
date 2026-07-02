@@ -171,3 +171,4 @@ export type TabId =
   | 'daily'
   | 'guidelines'
   | 'career'
+  | 'feedback'

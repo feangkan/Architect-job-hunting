@@ -16,4 +16,5 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'daily', label: 'Daily Routine', shortLabel: 'Daily', icon: '☀' },
   { id: 'guidelines', label: 'Guidelines', shortLabel: 'Guide', icon: '◎' },
   { id: 'career', label: 'Career Plan', shortLabel: 'Plan', icon: '↗' },
+  { id: 'feedback', label: 'Feedback', shortLabel: 'Feedback', icon: '✉' },
 ]
